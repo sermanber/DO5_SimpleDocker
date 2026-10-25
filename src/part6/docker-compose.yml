@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # 1. Первый контейнер
+  web-server:
+    build: .
+    container_name: my_server
+
+  # 2. Второй контейнер с официальным Nginx
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx_proxy_server
+    # Мапим 8080 порт контейнера на 80 порт локальной машины (хоста)
+    ports:
+      - "80:8080"
+    # Монтируем наш конфигурационный файл внутрь официального образа nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    # Гарантируем, что nginx начнет подниматься только после сервера
+    depends_on:
+      - web-server
